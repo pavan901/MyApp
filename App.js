@@ -93,7 +93,7 @@ const Button = ({onPress, buttonText, backgroundColor}) => {
   );
 };
 
-function ControlsContainer({join, leave, toggleWebcam, toggleMic}) {
+function ControlsContainer({join, leave, toggleWebcam, toggleMic , toggleScreenShare}) {
   return (
     <View
       style={{
@@ -127,6 +127,13 @@ function ControlsContainer({join, leave, toggleWebcam, toggleMic}) {
           leave();
         }}
         buttonText={'Leave'}
+        backgroundColor={'#FF0000'}
+      />
+        <Button
+        onPress={() => {
+          toggleScreenShare();
+        }}
+        buttonText={'Screen Share'}
         backgroundColor={'#FF0000'}
       />
     </View>
@@ -182,7 +189,7 @@ function ParticipantList({participants}) {
 
 function MeetingView() {
   // Get `participants` from useMeeting Hook
-  const {join, leave, toggleWebcam, toggleMic, participants,meetingId} = useMeeting({});
+  const {join, leave, toggleWebcam, toggleMic, participants,meetingId , toggleScreenShare} = useMeeting({});
   const participantsArrId = [...participants.keys()];
 
   return (
@@ -196,6 +203,7 @@ function MeetingView() {
         leave={leave}
         toggleWebcam={toggleWebcam}
         toggleMic={toggleMic}
+        toggleScreenShare={toggleScreenShare}
       />
     </View>
   );
