@@ -1,5 +1,4 @@
-/* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -7,6 +6,9 @@ import {
   TextInput,
   View,
   FlatList,
+  Platform,
+  NativeModules,
+  PermissionsAndroid,
 } from 'react-native';
 import {
   MeetingProvider,
@@ -15,7 +17,51 @@ import {
   MediaStream,
   RTCView,
 } from '@videosdk.live/react-native-sdk';
-import {createMeeting, token} from './api';
+import { createMeeting, token } from './api';
+
+const {ForegroundServiceModule } = NativeModules;
+
+// Request runtime permissions for Android
+const requestPermissions = async () => {
+  if (Platform.OS !== 'android') {
+    return true;
+  }
+
+  try {
+    console.log('Requesting runtime permissions...');
+    
+    const permissions = [
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+    ];
+    
+    const granted = await PermissionsAndroid.requestMultiple(permissions);
+    console.log('Permission results:', granted);
+    
+    const allGranted = Object.values(granted).every(
+      permission => permission === PermissionsAndroid.RESULTS.GRANTED
+    );
+    
+    if (allGranted) {
+      console.log('All permissions granted');
+      return true;
+    } else {
+      console.log('Some permissions denied:', granted);
+      
+      // Show which permissions were denied
+      const deniedPermissions = Object.keys(granted).filter(
+        permission => granted[permission] !== PermissionsAndroid.RESULTS.GRANTED
+      );
+    
+      
+      return false;
+    }
+  } catch (err) {
+    console.error('Error requesting permissions:', err);
+    return false;
+  }
+};
 
 function JoinScreen(props) {
   const [meetingVal, setMeetingVal] = useState('');
@@ -211,6 +257,36 @@ function MeetingView() {
 
 export default function App() {
   const [meetingId, setMeetingId] = useState(null);
+
+  // Start foreground service when app starts (Android only)
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      
+      if (ForegroundServiceModule) {
+        console.log('ForegroundServiceModule methods:', Object.getOwnPropertyNames(ForegroundServiceModule));
+        
+        // Request permissions and start service automatically
+        const initializeService = async () => {
+          const hasPermissions = await requestPermissions();
+          if (hasPermissions) {
+            try {
+              await ForegroundServiceModule.startService();
+              console.log('Foreground service started automatically');
+            } catch (e) {
+              console.error('Failed to start foreground service automatically:', e);
+            }
+          } else {
+            console.log('Permissions not granted, cannot start service automatically');
+          }
+        };
+        
+        // Delay the initialization slightly to ensure the app is fully loaded
+        setTimeout(initializeService, 1000);
+      } else {
+        console.error('ForegroundServiceModule is not available');
+      }
+    }
+  }, []);
 
   const getMeetingId = async id => {
     if (!token) {
