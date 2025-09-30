@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Needed to communicate with already-paired Bluetooth devices. (Legacy up to Android 11) -->
@@ -20,8 +20,10 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -44,22 +46,22 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-              <meta-data
-            android:name="live.videosdk.rnfgservice.notification_channel_name"
+
+        <meta-data
+            android:name="live.videosdk.rnwebrtc.notification_channel_name"
             android:value="Meeting Notification" />
         <meta-data
-            android:name="live.videosdk.rnfgservice.notification_channel_description"
+            android:name="live.videosdk.rnwebrtc.notification_channel_description"
             android:value="Notification appears when meeting starts." />
         <meta-data
-            android:name="live.videosdk.rnfgservice.notification_color"
+            android:name="live.videosdk.rnwebrtc.notification_color"
             android:resource="@color/red" />
 
         <!-- Foreground Services -->
         <service
-            android:name="live.videosdk.rnfgservice.ForegroundService"
+            android:name="live.videosdk.rnwebrtc.MediaProjectionService"
             android:foregroundServiceType="mediaProjection" />
-        <service
-            android:name="live.videosdk.rnfgservice.ForegroundServiceTask" />
+        <service android:name="live.videosdk.rnwebrtc.MediaProjectionServiceTask" />
         
         <service android:name=".MyForegroundService"
         android:foregroundServiceType="camera|microphone"

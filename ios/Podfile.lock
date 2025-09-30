@@ -1332,9 +1332,34 @@ PODS:
     - React-jsiexecutor
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
-  - react-native-webrtc (0.0.19):
+  - react-native-media-effects (0.0.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.11.18.00)
+    - RCTRequired
+    - RCTTypeSafety
     - React-Core
-    - WebRTC-SDK (~> 125.6422.07)
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-hermes
+    - React-ImageManager
+    - React-jsi
+    - react-native-webrtc
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-webrtc (0.0.20):
+    - React-Core
+    - WebRTC-SDK (= 125.6422.07)
   - React-NativeModulesApple (0.79.3):
     - glog
     - hermes-engine
@@ -1704,6 +1729,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - "react-native-media-effects (from `../node_modules/@videosdk.live/react-native-media-effects`)"
   - "react-native-webrtc (from `../node_modules/@videosdk.live/react-native-webrtc`)"
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native/ReactCommon/oscompat`)
@@ -1822,6 +1848,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-media-effects:
+    :path: "../node_modules/@videosdk.live/react-native-media-effects"
   react-native-webrtc:
     :path: "../node_modules/@videosdk.live/react-native-webrtc"
   React-NativeModulesApple:
@@ -1930,7 +1958,8 @@ SPEC CHECKSUMS:
   React-logger: 514fac028fee60c84591f951c7c04ba1c5023334
   React-Mapbuffer: fae8da2c01aeb7f26ad739731b6dba61fd02fd97
   React-microtasksnativemodule: 20454ffccff553f0ee73fd20873aa8555a5867fb
-  react-native-webrtc: 6d00d7515be1fb7bb0ef16e17b7fe263a40127b0
+  react-native-media-effects: 2f9d10fdbd269c6130bef092e2333692fefe5e65
+  react-native-webrtc: 061e19a3d71c23131f16e9c78e5823b7ac5e0e8e
   React-NativeModulesApple: 65b2735133d6ce8a3cb5f23215ef85e427b0139c
   React-oscompat: f26aa2a4adc84c34212ab12c07988fe19e9cf16a
   React-perflogger: e15a0d43d1928e1c82f4f0b7fc05f7e9bccfede8
