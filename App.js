@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -16,10 +17,11 @@ import {
   useParticipant,
   MediaStream,
   RTCView,
+  createCameraVideoTrack,
 } from '@videosdk.live/react-native-sdk';
-import { createMeeting, token } from './api';
+import {createMeeting, token} from './api';
 
-const {ForegroundServiceModule } = NativeModules;
+const {ForegroundServiceModule} = NativeModules;
 
 // Request runtime permissions for Android
 const requestPermissions = async () => {
@@ -29,32 +31,24 @@ const requestPermissions = async () => {
 
   try {
     console.log('Requesting runtime permissions...');
-    
+
     const permissions = [
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
       PermissionsAndroid.PERMISSIONS.CAMERA,
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
     ];
-    
+
     const granted = await PermissionsAndroid.requestMultiple(permissions);
-    console.log('Permission results:', granted);
-    
+
     const allGranted = Object.values(granted).every(
-      permission => permission === PermissionsAndroid.RESULTS.GRANTED
+      permission => permission === PermissionsAndroid.RESULTS.GRANTED,
     );
-    
+
     if (allGranted) {
       console.log('All permissions granted');
       return true;
     } else {
       console.log('Some permissions denied:', granted);
-      
-      // Show which permissions were denied
-      const deniedPermissions = Object.keys(granted).filter(
-        permission => granted[permission] !== PermissionsAndroid.RESULTS.GRANTED
-      );
-    
-      
       return false;
     }
   } catch (err) {
@@ -139,7 +133,13 @@ const Button = ({onPress, buttonText, backgroundColor}) => {
   );
 };
 
-function ControlsContainer({join, leave, toggleWebcam, toggleMic , toggleScreenShare}) {
+function ControlsContainer({
+  join,
+  leave,
+  toggleWebcam,
+  toggleMic,
+  toggleScreenShare,
+}) {
   return (
     <View
       style={{
@@ -175,7 +175,7 @@ function ControlsContainer({join, leave, toggleWebcam, toggleMic , toggleScreenS
         buttonText={'Leave'}
         backgroundColor={'#FF0000'}
       />
-        <Button
+      <Button
         onPress={() => {
           toggleScreenShare();
         }}
@@ -235,7 +235,15 @@ function ParticipantList({participants}) {
 
 function MeetingView() {
   // Get `participants` from useMeeting Hook
-  const {join, leave, toggleWebcam, toggleMic, participants,meetingId , toggleScreenShare} = useMeeting({});
+  const {
+    join,
+    leave,
+    toggleWebcam,
+    toggleMic,
+    participants,
+    meetingId,
+    toggleScreenShare,
+  } = useMeeting({});
   const participantsArrId = [...participants.keys()];
 
   return (
@@ -257,14 +265,32 @@ function MeetingView() {
 
 export default function App() {
   const [meetingId, setMeetingId] = useState(null);
+  const [customTrack, setCustomTrack] = useState(null);
+
+  useEffect(() => {
+    const videoTrack = async () => {
+      try {
+        const track = await createCameraVideoTrack({
+          encoderConfig: 'h90p_w160p',
+          multiStream: false,
+        });
+        console.log('tarck', track);
+        setCustomTrack(track);
+      } catch (e) {
+        console.error('Error creating custom track:', e);
+      }
+    };
+    videoTrack();
+  }, []);
 
   // Start foreground service when app starts (Android only)
   useEffect(() => {
     if (Platform.OS === 'android') {
-      
       if (ForegroundServiceModule) {
-        console.log('ForegroundServiceModule methods:', Object.getOwnPropertyNames(ForegroundServiceModule));
-        
+        console.log(
+          'ForegroundServiceModule methods:',
+        );
+
         // Request permissions and start service automatically
         const initializeService = async () => {
           const hasPermissions = await requestPermissions();
@@ -273,13 +299,18 @@ export default function App() {
               await ForegroundServiceModule.startService();
               console.log('Foreground service started automatically');
             } catch (e) {
-              console.error('Failed to start foreground service automatically:', e);
+              console.error(
+                'Failed to start foreground service automatically:',
+                e,
+              );
             }
           } else {
-            console.log('Permissions not granted, cannot start service automatically');
+            console.log(
+              'Permissions not granted, cannot start service automatically',
+            );
           }
         };
-        
+
         // Delay the initialization slightly to ensure the app is fully loaded
         setTimeout(initializeService, 1000);
       } else {
@@ -292,8 +323,8 @@ export default function App() {
     if (!token) {
       console.log('PLEASE PROVIDE TOKEN IN api.js FROM app.videosdk.live');
     }
-    const meetingId = id == null ? await createMeeting({token}) : id;
-    setMeetingId(meetingId);
+    const m = id == null ? await createMeeting({token}) : id;
+    setMeetingId(m);
   };
 
   return meetingId ? (
@@ -304,6 +335,8 @@ export default function App() {
           micEnabled: false,
           webcamEnabled: true,
           name: 'Test User',
+          customCameraVideoTrack: customTrack,
+          multiStream: false,
         }}
         token={token}>
         <MeetingView />
