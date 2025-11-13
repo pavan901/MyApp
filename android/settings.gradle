@@ -6,3 +6,5 @@ include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
 include ':rnwebrtc'
 project(':rnwebrtc').projectDir = new File(rootProject.projectDir, '../node_modules/@videosdk.live/react-native-webrtc/android')
+include ':videosdk.live_react-native-incallmanager'
+project(':videosdk.live_react-native-incallmanager').projectDir = new File(rootProject.projectDir, '../node_modules/@videosdk.live/react-native-incallmanager/android')

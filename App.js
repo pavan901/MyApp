@@ -243,7 +243,33 @@ function MeetingView() {
     participants,
     meetingId,
     toggleScreenShare,
-  } = useMeeting({});
+  } = useMeeting({
+    onMeetingJoined: async () => {
+      if (Platform.OS === 'android' && ForegroundServiceModule) {
+        try {
+          const hasPermissions = await requestPermissions();
+
+          if (hasPermissions) {
+            setTimeout(async () => {
+              await ForegroundServiceModule.startService();
+            }, 1000);
+          }
+        } catch (e) {
+          console.error('Failed to start foreground service:', e);
+        }
+      }
+    },
+    onMeetingLeft: async () => {
+      if (Platform.OS === 'android' && ForegroundServiceModule) {
+        try {
+          await ForegroundServiceModule.stopService();
+          console.log('Foreground service stopped on meeting left');
+        } catch (e) {
+          console.error('Failed to stop foreground service:', e);
+        }
+      }
+    },
+  });
   const participantsArrId = [...participants.keys()];
 
   return (
@@ -271,8 +297,9 @@ export default function App() {
     const videoTrack = async () => {
       try {
         const track = await createCameraVideoTrack({
-          encoderConfig: 'h90p_w160p',
+          encoderConfig: 'h540p_w960p',
           multiStream: false,
+          facingMode: 'environment',
         });
         console.log('tarck', track);
         setCustomTrack(track);
@@ -281,42 +308,6 @@ export default function App() {
       }
     };
     videoTrack();
-  }, []);
-
-  // Start foreground service when app starts (Android only)
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      if (ForegroundServiceModule) {
-        console.log(
-          'ForegroundServiceModule methods:',
-        );
-
-        // Request permissions and start service automatically
-        const initializeService = async () => {
-          const hasPermissions = await requestPermissions();
-          if (hasPermissions) {
-            try {
-              await ForegroundServiceModule.startService();
-              console.log('Foreground service started automatically');
-            } catch (e) {
-              console.error(
-                'Failed to start foreground service automatically:',
-                e,
-              );
-            }
-          } else {
-            console.log(
-              'Permissions not granted, cannot start service automatically',
-            );
-          }
-        };
-
-        // Delay the initialization slightly to ensure the app is fully loaded
-        setTimeout(initializeService, 1000);
-      } else {
-        console.error('ForegroundServiceModule is not available');
-      }
-    }
   }, []);
 
   const getMeetingId = async id => {
