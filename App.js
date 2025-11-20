@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
-  SafeAreaView,
   TouchableOpacity,
   Text,
   TextInput,
@@ -17,9 +16,9 @@ import {
   useParticipant,
   MediaStream,
   RTCView,
-  createCameraVideoTrack,
 } from '@videosdk.live/react-native-sdk';
 import {createMeeting, token} from './api';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const {ForegroundServiceModule} = NativeModules;
 
@@ -291,24 +290,6 @@ function MeetingView() {
 
 export default function App() {
   const [meetingId, setMeetingId] = useState(null);
-  const [customTrack, setCustomTrack] = useState(null);
-
-  useEffect(() => {
-    const videoTrack = async () => {
-      try {
-        const track = await createCameraVideoTrack({
-          encoderConfig: 'h540p_w960p',
-          multiStream: false,
-          facingMode: 'environment',
-        });
-        console.log('tarck', track);
-        setCustomTrack(track);
-      } catch (e) {
-        console.error('Error creating custom track:', e);
-      }
-    };
-    videoTrack();
-  }, []);
 
   const getMeetingId = async id => {
     if (!token) {
@@ -326,8 +307,8 @@ export default function App() {
           micEnabled: false,
           webcamEnabled: true,
           name: 'Test User',
-          customCameraVideoTrack: customTrack,
           multiStream: false,
+          defaultCamera: 'front',
         }}
         token={token}>
         <MeetingView />
