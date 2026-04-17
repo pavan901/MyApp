@@ -14,6 +14,7 @@ import {
   MeetingProvider,
   useMeeting,
   useParticipant,
+  MeetingConsumer,
   MediaStream,
   RTCView,
 } from '@videosdk.live/react-native-sdk';
@@ -311,7 +312,9 @@ export default function App() {
           defaultCamera: 'front',
         }}
         token={token}>
-        <MeetingView />
+        <MeetingConsumer>
+          {() => <MeetingView />}
+        </MeetingConsumer>
       </MeetingProvider>
     </SafeAreaView>
   ) : (
